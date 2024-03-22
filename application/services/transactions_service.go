@@ -75,6 +75,8 @@ func (ts *TransactionsService) Create(payer, payee int, amount float64) *applica
 			return applicationerrors.BadRequestException("Your transaction is not authorized")
 		}
 
+		t := models.NewTransactionModel(payer, payee, value)
+
 		currentwallet.Amount -= value
 
 		if err := walletrepo.Update(sender.ID, currentwallet.Amount); err != nil {
@@ -92,8 +94,6 @@ func (ts *TransactionsService) Create(payer, payee int, amount float64) *applica
 		if err := walletrepo.Update(payee, revicerwallet.Amount); err != nil {
 			return applicationerrors.InternalServerException()
 		}
-
-		t := models.NewTransactionModel(payer, payee, value)
 
 		repo := ts.getTransactionRepository()
 
